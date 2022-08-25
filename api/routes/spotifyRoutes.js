@@ -7,6 +7,10 @@ const SpotifyWebApi = require("spotify-web-api-node");
 
 const SpotifyToken = require("../models/spotifyToken");
 
+const patchToken = async (data) => {
+  return await SpotifyToken.findOneAndUpdate({}, data);
+};
+
 router.get("/token", (req, res, next) => {
   res.send(req.query.authorization_code);
 });
@@ -22,11 +26,13 @@ router.get("/login", (req, res, next) => {
         scope: scope,
         redirect_uri: `http://localhost:3000`,
         state: state,
+        show_dialog: true,
       })
   );
 });
 
-router.post("/auth", (req, res, next) => {
+router.post("/auth", async (req, res, next) => {
+  let token = await SpotifyToken.findOne();
   const code = req.body.code;
   const spotifyApi = new SpotifyWebApi({
     redirectUri: `http://localhost:3000`,
@@ -37,14 +43,24 @@ router.post("/auth", (req, res, next) => {
   spotifyApi
     .authorizationCodeGrant(code)
     .then((data) => {
-      const token = new SpotifyToken({
-        accessToken: data.body.access_token,
-        refreshToken: data.body.refresh_token,
-        expiresIn: data.body.expires_in,
-      });
+      if (token === null) {
+        const newToken = new SpotifyToken({
+          accessToken: data.body.access_token,
+          refreshToken: data.body.refresh_token,
+          expiresIn: data.body.expires_in,
+        });
+        token = newToken;
+      } else {
+        const updateToken = {
+          accessToken: data.body.access_token,
+          refreshToken: data.body.refresh_token,
+          expiresIn: data.body.expires_in,
+        };
+        patchToken(updateToken);
+      }
       try {
-        const newToken = token.save();
-        res.status(201).json(newToken);
+        token.save();
+        res.status(201).json(token);
       } catch (error) {
         res.status(400).json({ message: error.message });
       }
