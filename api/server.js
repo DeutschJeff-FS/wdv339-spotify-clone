@@ -19,8 +19,8 @@ const db = mongoose.connection;
 db.on("error", (error) => console.error(error));
 db.once("open", () => console.log(`Database Connection Established.`));
 
-const spotifyRouter = require("./routes/spotifyRoutes");
-app.use("/spotify/v1", spotifyRouter);
+const spotify = require("./routes/spotifyRoutes");
+app.use("/spotify/v1", spotify);
 
 app.listen(PORT, () => {
   console.log(`Server running on ${PORT}.`);

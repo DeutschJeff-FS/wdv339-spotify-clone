@@ -10,6 +10,12 @@ const tokenSchema = new mongoose.Schema({
   expires_in: {
     type: Number,
   },
+  token_type: {
+    type: String,
+  },
+  scope: {
+    type: String,
+  },
 });
 
 module.exports = mongoose.model("SpotifyToken", tokenSchema);
