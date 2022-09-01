@@ -1,5 +1,5 @@
 import "../App.css";
-import GreenSpotify from "../images/Spotify_Logo_RGB_Green.png";
+import GreenSpotify from "../images/logos/02_CMYK/02_PNG/Spotify_Logo_CMYK_Green.png";
 
 function Login() {
   return (

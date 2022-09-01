@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
 
 const tokenSchema = new mongoose.Schema({
-  accessToken: {
+  access_token: {
     type: String,
   },
-  refreshToken: {
+  refresh_token: {
     type: String,
   },
-  expiresIn: {
+  expires_in: {
     type: Number,
   },
 });

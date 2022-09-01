@@ -1,13 +1,18 @@
+import { useEffect, useState } from "react";
 import "./App.css";
+import { accessToken } from "./accessToken";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 
 function App() {
-  const code = new URLSearchParams(window.location.search).get("code");
+  const [token, setToken] = useState(null);
+  useEffect(() => {
+    setToken(accessToken);
+  }, []);
   return (
     <div className="App">
       <header className="App-header">
-        {code ? <Dashboard code={code} /> : <Login />}
+        {!token ? <Login /> : <Dashboard />}
       </header>
     </div>
   );

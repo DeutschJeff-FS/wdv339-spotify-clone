@@ -1,26 +1,44 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../App.css";
 
-function Dashboard({ code }) {
-  let ignore = false;
+function Dashboard() {
+  const [loading, setLoading] = useState(true);
+  const [secondLoading, setSecondLoading] = useState(true);
+  const [data, setData] = useState(null);
+  const [choices, setChoices] = useState(null);
+
   useEffect(() => {
-    if (!ignore) {
-      axios
-        .post(`http://localhost:3001/spotify/v1/auth`, { code })
-        .then((res) => {
-          console.log(res.data);
+    const getRelease = async () => {
+      await axios
+        .get("http://localhost:3001/spotify/v1/browse/new-releases")
+        .then(({ data }) => {
+          setData(data);
         })
-        .catch(() => {
-          window.location = "/";
+        .catch((error) => {
+          console.error(error);
         });
-    }
-    return () => {
-      ignore = true;
+      setLoading(false);
     };
-  }, [code]);
+    getRelease();
+  }, []);
+
+  useEffect(() => {
+    const getChoices = async () => {
+      await axios
+        .get("http://localhost:3001/spotify/v1/browse/categories")
+        .then(({ data }) => {
+          setChoices(data);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      setSecondLoading(false);
+    };
+    getChoices();
+  }, []);
   return (
-    <div>
+    <div className="App-header">
       <h1>Hello Spotify World</h1>
     </div>
   );
