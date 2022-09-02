@@ -1,21 +1,23 @@
-import { useEffect, useState } from "react";
-import "./App.css";
-import { accessToken } from "./accessToken";
-import Dashboard from "./pages/Dashboard";
+import { useEffect } from "react";
 import Login from "./pages/Login";
+import Spotify from "./pages/Dashboard";
+import { reducerCases } from "./utils/Constants";
+import { useStateProvider } from "./utils/StateProvider";
 
 function App() {
-  const [token, setToken] = useState(null);
+  const [{ token }, dispatch] = useStateProvider();
+
   useEffect(() => {
-    setToken(accessToken);
-  }, []);
-  return (
-    <div className="App">
-      <header className="App-header">
-        {!token ? <Login /> : <Dashboard />}
-      </header>
-    </div>
-  );
+    const hash = window.location.hash;
+    if (hash) {
+      const token = hash.substring(1).split("&")[0].split("=")[1];
+      if (token) {
+        dispatch({ type: reducerCases.SET_TOKEN, token });
+      }
+    }
+    document.title = "Spotify";
+  }, [dispatch, token]);
+  return <div className="App">{token ? <Spotify /> : <Login />}</div>;
 }
 
 export default App;

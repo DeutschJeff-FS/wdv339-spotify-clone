@@ -1,47 +1,106 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import "../App.css";
+import styled from "styled-components";
 
-function Dashboard() {
-  const [loading, setLoading] = useState(true);
-  const [secondLoading, setSecondLoading] = useState(true);
-  const [data, setData] = useState(null);
-  const [choices, setChoices] = useState(null);
+import Body from "../components/Body";
+import Sidebar from "../components/Sidebar";
+import Footer from "../components/Footer";
+import Navbar from "../components/NavBar";
+import { useStateProvider } from "../utils/StateProvider";
+import { reducerCases } from "../utils/Constants";
+
+function Spotify() {
+  const [{ token }, dispatch] = useStateProvider();
+  const [navBackground, setNavBackground] = useState(false);
+  const [headerBackground, setHeaderBackground] = useState(false);
+  const bodyRef = useRef();
+  const bodyScrolled = () => {
+    bodyRef.current.scrollTop >= 30
+      ? setNavBackground(true)
+      : setNavBackground(false);
+    bodyRef.current.scrollTop >= 268
+      ? setHeaderBackground(true)
+      : setHeaderBackground(false);
+  };
 
   useEffect(() => {
-    const getRelease = async () => {
-      await axios
-        .get("http://localhost:3001/spotify/v1/browse/new-releases")
-        .then(({ data }) => {
-          setData(data);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-      setLoading(false);
+    const getUserInfo = async () => {
+      const { data } = await axios.get("https://api.spotify.com/v1/me", {
+        headers: {
+          Authorization: "Bearer " + token,
+          "Content-Type": "application/json",
+        },
+      });
+      const userInfo = {
+        userId: data.id,
+        userUrl: data.external_urls.spotify,
+        name: data.display_name,
+      };
+      dispatch({ type: reducerCases.SET_USER, userInfo });
     };
-    getRelease();
-  }, []);
+    getUserInfo();
+  }, [dispatch, token]);
 
   useEffect(() => {
-    const getChoices = async () => {
-      await axios
-        .get("http://localhost:3001/spotify/v1/browse/categories")
-        .then(({ data }) => {
-          setChoices(data);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-      setSecondLoading(false);
+    const getPlaybackState = async () => {
+      const { data } = await axios.get("https://api.spotify.com/v1/me/player", {
+        headers: {
+          Authorization: "Bearer " + token,
+          "Content-Type": "application/json",
+        },
+      });
+      dispatch({
+        type: reducerCases.SET_PLAYER_STATE,
+        playerState: data.is_playing,
+      });
     };
-    getChoices();
-  }, []);
+    getPlaybackState();
+  }, [dispatch, token]);
+
   return (
-    <div className="App-header">
-      <h1>Hello Spotify World</h1>
-    </div>
+    <Container>
+      <div className="spotify__body">
+        <Sidebar />
+        <div className="body" ref={bodyRef} onScroll={bodyScrolled}>
+          <Navbar navBackground={navBackground} />
+          <div className="body__contents">
+            <Body headerBackground={headerBackground} />
+          </div>
+        </div>
+      </div>
+      <div className="spotify__footer">
+        <Footer />
+      </div>
+    </Container>
   );
 }
 
-export default Dashboard;
+export default Spotify;
+
+const Container = styled.div`
+  max-width: 100vw;
+  max-height: 100vh;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: 85vh 15vh;
+  .spotify__body {
+    display: grid;
+    grid-template-columns: 15vw 85vw;
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(transparent, rgba(25, 20, 20, 1));
+    background-color: #5fa8d3;
+    .body {
+      height: 100%;
+      width: 100%;
+      overflow: auto;
+      &::-webkit-scrollbar {
+        width: 0.7rem;
+        max-height: 2rem;
+        &-thumb {
+          background-color: rgba(255, 255, 255, 0.6);
+        }
+      }
+    }
+  }
+`;
