@@ -165,17 +165,11 @@ spotify.get("/me", status, async (req, res, next) => {
     });
 });
 
-spotify.get("/browse/new-releases", status, async (req, res, next) => {
+spotify.get("/playlists", status, async (req, res, next) => {
   const { access_token, token_type } = req.token;
-  const offset = Math.floor(Math.random() * (100 - 10 + 1) + 1);
   await axios({
     method: "GET",
-    url: `https://api.spotify/com/v1/browse/new-releases`,
-    params: {
-      country: "us",
-      limit: 5,
-      offset: offset,
-    },
+    url: `https://api.spotify/com/v1/playlists`,
     headers: {
       Authorization: `${token_type} ${access_token}`,
     },
@@ -188,30 +182,7 @@ spotify.get("/browse/new-releases", status, async (req, res, next) => {
     });
 });
 
-spotify.get("/browse/categories", status, async (req, res, next) => {
-  const { access_token, token_type } = req.token;
-  const offset = Math.floor(Math.random() * (45 - 5 + 1) + 1);
-  await axios({
-    method: "GET",
-    url: `https://api.spotify/com/v1/browse/categories`,
-    params: {
-      country: "us",
-      limit: 10,
-      offset: offset,
-    },
-    headers: {
-      Authorization: `${token_type} ${access_token}`,
-    },
-  })
-    .then((response) => {
-      res.json(response.data);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-});
-
-spotify.get("/search", status, async (req, res, next) => {
+spotify.get("/search", async (req, res, next) => {
   const { access_token, token_type } = req.token;
   await axios({
     method: "GET",
@@ -234,4 +205,40 @@ spotify.get("/search", status, async (req, res, next) => {
     });
 });
 
-module.exports = spotify;
+spotify.get("/me/player", async (req, res, next) => {
+  const { access_token, token_type } = req.token;
+  await axios({
+    method: "PUT",
+    url: "https://api.spotify.com/v1/me/player",
+    headers: {
+      Authorization: `${token_type} ${access_token}`,
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => {
+      res.json(response.data);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+});
+
+spotify.get("/me/player/currently-playing", async (req, res, next) => {
+  const { access_token, token_type } = req.token;
+  await axios({
+    method: "GET",
+    url: `https://api.spotify.com/v1/me/player/currently-playing`,
+    headers: {
+      Authorization: `${token_type} ${access_token}`,
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => {
+      res.json(response.data);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+});
+
+https: module.exports = spotify;
