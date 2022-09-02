@@ -33,12 +33,9 @@ _**Base Technology Requirements**_
 _**Other Technologies Used**_
 
 - NPM Packages
-  - Root
-    - Dependencies
-      - concurrently >= v7.3.0
-    - DevDependencies
   - API
     - Dependencies
+      - axios >= v0.27.0
       - body-parser >= v1.20.0
       - cors >= v2.8.0
       - dotenv >= v16.0.0
@@ -50,9 +47,10 @@ _**Other Technologies Used**_
       - nodemon >= v2.0.0
   - React
     - Dependencies
+      - react-icons >= v4.4.0
       - react-router-dom >= v6.3.0
       - axios >= v0.27.0
-    - DevDependencies
+      - styled-components >= v5.3.0
 
 ---
 
@@ -69,12 +67,15 @@ _**Other Technologies Used**_
 - To run React
   - From root folder, `cd reactjs`
   - Then `npm start`
-- To run frontend and backend concurrently
-  - At root, `npm run dev:react`
 
 ---
 
 ### Links
 
-- [](http://localhost:3001) - Link to the backend (Express) API
 - [](http://localhost:3000) - Link to the frontend application for the homepage
+- [](http://localhost:3001) - Link to the backend (Express) API
+- [](https://accounts.spotify.com/authorize) - Spotify API authorization route
+- [](https://api.spotify.com/v1/me) - Spotify API endpoint to get user info
+- [](https://api.spotify.com/v1/me/player) - Spotify API endpoint to create player
+- [](https://api.spotify.com/v1/me/player/currently-playing) - Spotify API endpoint to play currently selected music
+- [](https://api.spotify.com/v1/playlists) - Spotify API endpoint to get user's playlist data
